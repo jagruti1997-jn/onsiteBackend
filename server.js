@@ -3,7 +3,7 @@ const bodyParser=require('body-parser')
 const app=express()
 require('dotenv').config();
 app.use(bodyParser.json())
-const port=process.env.PORT
+const port=process.env.PORT||9000;
 const api=require('./index.js')
 
 
