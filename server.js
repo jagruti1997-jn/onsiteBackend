@@ -16,7 +16,7 @@ require('./database/db.js')
 const loginRoutes=require("./routers/login.js")
 
 app.get("/api/test",(req,res)=>{
-    req.send({message:"backend is started"})
+    res.send({message:"backend is started"})
 })
 
 
