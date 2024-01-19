@@ -1,15 +1,11 @@
-const mongoose=require("mongoose")
+const mongoose = require("mongoose");
 require('dotenv').config();
 
-const { DB_HOST,DB_PORT,DB_NAME }=process.env
+const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_HOST, MONGO_DB_NAME } = process.env;
 
-
-const connection=`mongodb://${DB_HOST}:${DB_PORT}/${DB_NAME}`
-// const connection="mongodb://localhost:27017/Test"
-mongoose.connect(connection,{
-    useUnifiedTopology:true,
-    useNewUrlParser:true
-}).then(()=>console.log("database connected")).catch((error)=>{
-    console.log(error)
-})
-
+mongoose.connect(`mongodb+srv://${encodeURIComponent(MONGO_USERNAME)}:${encodeURIComponent(MONGO_PASSWORD)}@${MONGO_HOST}/${MONGO_DB_NAME}?retryWrites=true&w=majority`, {
+    useUnifiedTopology: true,
+    useNewUrlParser: true
+}).then(() => console.log("Database connected")).catch((error) => {
+    console.log(error);
+});
