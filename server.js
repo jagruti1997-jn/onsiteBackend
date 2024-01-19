@@ -15,9 +15,11 @@ require('./database/db.js')
 
 const loginRoutes=require("./routers/login.js")
 
-app.get("/api/test",(req,res)=>{
-    res.send({message:"backend is started"})
-})
+app.get('/api/example', (req, res) => {
+    // Correct: Use res.send() to send a response
+    res.send('Hello, World!');
+  });
+  
 
 
 //all routes calling
