@@ -1,0 +1,47 @@
+//login apis
+register:-
+url:http://localhost:9000/api/v1/register
+data:email,password
+
+login
+url:http://localhost:9000/api/v1/login
+data:email,password
+
+
+//refresh Token
+url:http://localhost:9000/api/v1/refresh
+data:refreshToken
+
+//request api
+url:http://localhost:9000/api/v1/category
+data:ItemName,ItemQuantity,CategoryID,SiteID
+
+update request:-
+url:http://localhost:3001/api/v1/vendor/:id
+data:file,vendorName,status
+
+//workers request
+url:http://localhost:3001/api/v1/workers
+data:Name,date,status
+
+//vendor request
+url:http://localhost:3001/api/v1/vendor
+data:Name,phonenumber,location,description
+
+
+//site request
+url:http://localhost:9000/api/v1/sites
+data:Name,location,description
+
+//category request
+url:http://localhost:9000/api/v1/category
+data:Name,CategoryUnit
+
+//user request
+url:http://localhost:9000/api/v1/user
+data:FirstName,Email,phonenumber,Role,site,description
+    
+//contractor request
+url:http://localhost:9000/api/v1/contractor
+data:Name,location,description
+	
