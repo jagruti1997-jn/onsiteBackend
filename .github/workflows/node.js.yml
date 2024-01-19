@@ -22,10 +22,7 @@ jobs:
 
     - name: Create .env file
       run: |
-        echo "MONGO_USERNAME=rushikesh_mongo" > .env
-        echo "MONGO_PASSWORD=Rushi@1923" >> .env
-        echo "MONGO_HOST=cluster0.ht45xxh.mongodb.net" >> .env
-        echo "MONGO_DB_NAME=server_db" >> .env
+        echo "${{ secrets.PROD }}" > .env
 
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
