@@ -46,7 +46,7 @@ router.get('/:id', async (req, res) => {
         const data = await userDetails.findOne({ _id: req.params.id })
         if(data){
             const site_data = await siteDetails.findOne({ _id: data.Site })
-        
+
             const userData = {
               Name: data.Name,
               Role: data.Role,
@@ -78,55 +78,56 @@ router.get('/:id', async (req, res) => {
 })
 //create data
 router.post('/', userValidationRules(), validate, async (req, res) => {
-  try {
-    const { Password } = req.body
-    bcrypt.hash(Password, 10, async function (err, hash) {
-      if (err) {
-        res.status(500).json({
-          Success: false,
-          message: err.message,
-        })
-      }
+    const { Password, Name, Email, Contact, Role, Site } = req.body;
 
-      // First, check if the email already exists
-      const existingUser = await userDetails.findOne({ Email: req.body.Email })
+    try {
+      // Hash the password
+      const hash = await bcrypt.hash(Password, 10);
+    
+      // Check if the email already exists
+      const existingUser = await userDetails.findOne({ Email });
+    
       if (existingUser) {
         // Email already exists, handle the error or take appropriate action
         return res.status(422).json({
           Status_code: 422,
-          Success: true,
+          Success: false,
           message: 'Email already exists',
-        })
-      } else {
-        // Email is unique, proceed with creating the new user
-        const data = await userDetails.create({
-          Name: req.body.Name,
-          Email: req.body.Email,
-          Password: hash,
-          Contact: req.body.Contact,
-          Role: req.body.Role,
-          Site: req.body.Site,
-          user: req.user,
-        })
-        const userRoleID = data._id
-        // Handle the success, maybe send a response back
-        return res
-          .status(201)
-          .json({
-            Status_code: 200,
-            Success: true,
-            message: 'User created successfully',
-            data,
-            userRoleID: userRoleID,
-          })
+        });
       }
-    })
-  } catch (e) {
-    res.status(500).json({
-      Success: false,
-      message: e.message,
-    })
-  }
+    
+      // Email is unique, proceed with creating the new user
+      const data = await userDetails.create({
+        Name,
+        Email,
+        Password: hash,
+        Contact,
+        Role,
+        Site,
+        user: req.user,
+      });
+    
+      const userRoleID = data._id;
+    
+      // Handle the success, maybe send a response back
+      return res.status(201).json({
+        Status_code: 201,
+        Success: true,
+        message: 'User created successfully',
+        data,
+        userRoleID,
+      });
+    
+    } catch (err) {
+      // Handle errors
+      console.error(err);
+      return res.status(500).json({
+        Status_code: 500,
+        Success: false,
+        message: err.message || 'Internal Server Error',
+      });
+    }
+    
 })
 
 //update data
