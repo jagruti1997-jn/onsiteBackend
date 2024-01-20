@@ -32,5 +32,5 @@ jobs:
 
     - name: Install dependencies
       run: npm ci
-    - run: pm2 restart construction_site/server.js
+    - run: pm2 restart backend
       
