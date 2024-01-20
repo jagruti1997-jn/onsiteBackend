@@ -4,12 +4,15 @@ const userDetails=new usersSchema({
     FirstName:{
         type:String,required:true
     },
-    
     Contact:{
-        type:Number,required:true
+        type:Number,
+        required:true,
+        unique: true 
     },
     Email:{
-        type:String,required:true
+        type:String,
+        required:true,
+        unique: true 
     },
     Password:{
         type:String,required:true
@@ -27,8 +30,6 @@ const userDetails=new usersSchema({
     Site:{
         type:String,required:true
     },
-    
-  
     user:{
         type:usersSchema.Types.ObjectId,ref:"User"
     }
