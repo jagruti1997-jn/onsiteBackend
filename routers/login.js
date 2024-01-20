@@ -1,9 +1,11 @@
 const express = require('express')
 
 const login = require('../module/login')
+
 const { loginValidationRules, validate } = require('../middleware/validation')
 const bcrypt = require('bcrypt')
 var jwt = require('jsonwebtoken')
+const userdetails = require('../module/userModel')
 require('dotenv').config()
 const secret = process.env.SECRET_KEY
 const router = express.Router()
@@ -86,11 +88,12 @@ router.post('/login', loginValidationRules(), validate, async (req, res) => {
           },
           secret,
         )
-
+        const user_data = await userdetails.findOne({ _id: data.user })
         res.status(200).json({
           Status_code: 200,
           Success: true,
           token,
+          user: user_data,
           refreshToken,
         })
       }
