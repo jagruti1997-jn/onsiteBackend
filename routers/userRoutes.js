@@ -42,22 +42,39 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/:id', async (req, res) => {
-  const data = await userDetails.findOne({ _id: req.params.id })
-  const site_data = await siteDetails.findOne({ _id: data.Site })
-
-  const userData = {
-    Name: data.Name,
-    Role: data.Role,
-    Email: data.Email,
-    Site: site_data,
-    createdAt: data.createdAt,
-  }
-
-  res.status(200).json({
-    Status_code: 200,
-    Success: true,
-    data: userData,
-  })
+    try{
+        const data = await userDetails.findOne({ _id: req.params.id })
+        if(data){
+            const site_data = await siteDetails.findOne({ _id: data.Site })
+        
+            const userData = {
+              Name: data.Name,
+              Role: data.Role,
+              Email: data.Email,
+              Site: site_data,
+              createdAt: data.createdAt,
+            }
+          
+            res.status(200).json({
+              Status_code: 200,
+              Success: true,
+              data: userData,
+            })
+        }else{
+            res.status(400).json({
+                Status_code: 400,
+                Success: true,
+               message:"User not found"
+              })
+        }
+        
+    }catch(error){
+        res.status(500).json({
+            Success: false,
+            message: error.message,
+          })
+    }
+  
 })
 //create data
 router.post('/', userValidationRules(), validate, async (req, res) => {
