@@ -23,9 +23,11 @@ const authorization = (req, res, next) => {
           message: 'not Authenticated',
         })
       }
-      console.log(err, decoded)
-      const user = await login.findOne({ _id: decoded.data })
-      req.user = user._id
+      
+      if (decoded){
+        const user = await login.findOne({ _id: decoded.data })
+        req.user = user._id
+      }
       next()
     })
   } else {
