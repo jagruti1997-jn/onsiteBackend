@@ -79,18 +79,31 @@ router.post("/",userValidationRules(),validate, async (req,res)=>{
                 })
             }
 
-   const data=await userDetails.create({FirstName:req.body.FirstName
-            ,Email:req.body.Email,Password:hash,
-            Contact:req.body.Contact,Role:req.body.Role,Site:req.body.Site,
-            user:req.user});
-            const userRoleID=data._id
-        res.status(200).json({
-            Status_code:200,
-            Success:true,
-            data,
-            userRoleID:userRoleID
+            // First, check if the email already exists
+            const existingUser = await userDetails.findOne({ Email: req.body.Email });
 
-        })
+            if (existingUser) {
+                // Email already exists, handle the error or take appropriate action
+                return res.status(400).json({ error: 'Email already exists' });
+            } else {
+                // Email is unique, proceed with creating the new user
+                const data = await userDetails.create({
+                    FirstName: req.body.FirstName,
+                    Email: req.body.Email,
+                    Password: hash,
+                    Contact: req.body.Contact,
+                    Role: req.body.Role,
+                    Site: req.body.Site,
+                    user: req.user
+                });
+                const userRoleID=data._id
+                // Handle the success, maybe send a response back
+                return res.status(201).json({ Status_code:200,
+                                              Success:true, 
+                                              message: 'User created successfully',
+                                                data,
+                                                userRoleID:userRoleID });
+            }
     })
     }catch(e){
         res.status(500).json({
