@@ -34,8 +34,6 @@ const userValidationRules=()=>{
     body('Contact').notEmpty().withMessage('Contact is required'),
     body('Role').notEmpty().withMessage('Role cannot be empty '),
     body('Site').notEmpty().withMessage('Site cannot be empty ')
-
-  
 ]}
 
 const siteValidationRules=()=>{

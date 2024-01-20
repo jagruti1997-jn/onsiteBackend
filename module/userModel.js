@@ -2,7 +2,8 @@ const mongoose=require('mongoose')
 const usersSchema=mongoose.Schema;
 const userDetails=new usersSchema({
     FirstName:{
-        type:String,required:true
+        type:String,
+        required:true
     },
     Contact:{
         type:Number,
