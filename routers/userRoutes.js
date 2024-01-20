@@ -85,7 +85,7 @@ router.post("/",userValidationRules(),validate, async (req,res)=>{
             } else {
                 // Email is unique, proceed with creating the new user
                 const data = await userDetails.create({
-                    FirstName: req.body.FirstName,
+                    Name: req.body.Name,
                     Email: req.body.Email,
                     Password: hash,
                     Contact: req.body.Contact,
