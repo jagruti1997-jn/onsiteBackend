@@ -49,58 +49,70 @@ router.post('/register', loginValidationRules(), validate, async (req, res) => {
 
 //signIn api
 router.post('/login', loginValidationRules(), validate, async (req, res) => {
-  try {
-    const { email, password } = req.body
-
-    const data = await login.findOne({ email })
-    if (!data) {
-      res.status(400).json({
-        Success: false,
-        message: 'user is not register',
-      })
-    }
-
-    bcrypt.compare(password, data.password, async function (err, result) {
-      if (err) {
+    try {
+        const { email, password } = req.body
+      
+        const data = await login.findOne({ email })
+        if (!data) {
+          res.status(400).json({
+            Success: false,
+            message: 'User is not registered',
+          })
+          return; // Add return statement to exit the function
+        }
+      
+        bcrypt.compare(password, data.password, async function (err, result) {
+          if (err) {
+            res.status(500).json({
+              Success: false,
+              message: err.message,
+            })
+            return; // Add return statement to exit the function
+          }
+      
+          if (result) {
+            const token = jwt.sign(
+              {
+                exp: Math.floor(Date.now() / 1000) + 60 * 60,
+                data: data._id,
+              },
+              secret,
+            )
+      
+            // Refresh token
+            const expInDays = 7
+            const expTime = expInDays * 24 * 60 * 60
+            const refreshToken = jwt.sign(
+              {
+                exp: Math.floor(Date.now() / 1000) + expTime,
+                data: data._id,
+              },
+              secret,
+            )
+      
+            res.status(200).json({
+              Status_code: 200,
+              Success: true,
+              token,
+              refreshToken,
+            })
+          } else {
+            // Password is incorrect
+            res.status(401).json({
+              Success: false,
+              message: 'Incorrect password',
+            })
+          }
+        })
+      } catch (error) {
+        // Handle other errors
+        console.error(error);
         res.status(500).json({
           Success: false,
-          message: err.message,
+          message: 'Internal server error',
         })
       }
-      if (result) {
-        const token = jwt.sign(
-          {
-            exp: Math.floor(Date.now() / 1000) + 60 * 60,
-            data: data._id,
-          },
-          secret,
-        )
-
-        //refresh token
-        const expInDays = 7
-        const expTime = expInDays * 24 * 60 * 60
-        const refreshToken = jwt.sign(
-          {
-            exp: Math.floor(Date.now() / 1000) + expTime,
-            data: data._id,
-          },
-          secret,
-        )
-
-        res.status(200).json({
-          Status_code: 200,
-          Success: true,
-          token,
-          refreshToken,
-        })
-      }
-    })
-  } catch (e) {
-    res.status(500).json({
-      Success: false,
-      message: e.message,
-    })
-  }
+      
 })
 
 //refresh token
