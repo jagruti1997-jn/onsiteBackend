@@ -17,7 +17,7 @@ const loginRoutes=require("./routers/login.js")
 
 app.get('/api/example', (req, res) => {
     // Correct: Use res.send() to send a response
-    res.send('Hello, World!');
+    res.send('Hello, World! team ');
   });
   
 
