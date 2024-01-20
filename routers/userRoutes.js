@@ -69,7 +69,7 @@ router.get("/:id",async (req,res)=>{
 
 router.post("/",userValidationRules(),validate, async (req,res)=>{
     try{
-
+        console.log("-------- ")
         const {Password} =req.body;
         bcrypt.hash(Password,10, async function(err,hash){
             if(err){
