@@ -41,9 +41,8 @@ router.get("/",async (req,res)=>{
 });
 
 router.get("/:id",async (req,res)=>{
-    
-    const data= await userDetails.findOne({_id:req.params.id});
 
+    const data= await userDetails.findOne({_id:req.params.id});
     const site_data = await siteDetails.findOne({_id:data.Site});
 
     const userData={
@@ -54,7 +53,7 @@ router.get("/:id",async (req,res)=>{
         createdAt:data.createdAt,
         
     }
-    
+
     res.status(200).json({
         Status_code:200,
         Success:true,
@@ -65,7 +64,6 @@ router.get("/:id",async (req,res)=>{
 //create data
 router.post("/",userValidationRules(),validate, async (req,res)=>{
     try{
-        console.log("-------- ")
         const {Password} =req.body;
         bcrypt.hash(Password,10, async function(err,hash){
             if(err){
@@ -77,7 +75,6 @@ router.post("/",userValidationRules(),validate, async (req,res)=>{
 
             // First, check if the email already exists
             const existingUser = await userDetails.findOne({ Email: req.body.Email });
-            console.log("existingUser ",existingUser)
             if (existingUser) {
                 // Email already exists, handle the error or take appropriate action
                 return res.status(422).json({ 
@@ -97,11 +94,11 @@ router.post("/",userValidationRules(),validate, async (req,res)=>{
                 });
                 const userRoleID=data._id
                 // Handle the success, maybe send a response back
-                return res.status(201).json({ Status_code:200,
-                                              Success:true, 
-                                              message: 'User created successfully',
-                                                data,
-                                                userRoleID:userRoleID });
+return res.status(201).json({ Status_code:200,
+                                Success:true, 
+                                message: 'User created successfully',
+                                data,
+                                userRoleID:userRoleID });
             }
     })
     }catch(e){
@@ -126,8 +123,8 @@ router.put("/:id", async (req,res)=>{
             runValidators:true}});
         res.status(200).json({
             Status_code:200,
-            Success:true,
-            data
+            message: 'User updated successfully',
+            Success:true
         })
     }catch(e){
         res.status(500).json({
