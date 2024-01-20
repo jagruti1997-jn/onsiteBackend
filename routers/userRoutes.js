@@ -81,7 +81,7 @@ router.post("/",userValidationRules(),validate, async (req,res)=>{
 
             // First, check if the email already exists
             const existingUser = await userDetails.findOne({ Email: req.body.Email });
-
+            console.log("existingUser ",existingUser)
             if (existingUser) {
                 // Email already exists, handle the error or take appropriate action
                 return res.status(400).json({ error: 'Email already exists' });
