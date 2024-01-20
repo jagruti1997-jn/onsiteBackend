@@ -12,7 +12,7 @@ require('./database/db.js')
 const loginRoutes = require('./routers/login.js')
 
 app.get('/api/example', (req, res) => {
-  console.log('Hello, World! team-----')
+  
   res.send('Hello, World! team ')
 })
 
