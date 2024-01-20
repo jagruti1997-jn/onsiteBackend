@@ -4,13 +4,6 @@ const {userValidationRules,validate}=require("../middleware/validation")
 const userDetails=require("../module/userModel");
 const bcrypt=require('bcrypt')
 
-//validate input
-
-
-
-
-
-
 //fetch /read data
 router.get("/",async (req,res)=>{
     try{
@@ -18,7 +11,7 @@ router.get("/",async (req,res)=>{
          const searchRegex=new RegExp(searchTerm,'i')
    const searchQuery={
     $or:[
-        {FirstName:{$regex:searchRegex}},
+        {Name:{$regex:searchRegex}},
        
         // {Contact:{$eq:parseInt(searchTerm)}}
     ]
@@ -46,17 +39,16 @@ router.get("/",async (req,res)=>{
 
 });
 
-
-
-//get by id
-
 router.get("/:id",async (req,res)=>{
     
     const data= await userDetails.findOne({_id:req.params.id});
     const userData={
-        FirstName:data.FirstName,
+        Name:data.Name,
         Role:data.Role,
-        createdAt:data.createdAt
+        Email:data.Email,
+        Site:data.Site,
+        createdAt:data.createdAt,
+        
     }
     res.status(200).json({
         Status_code:200,
@@ -66,7 +58,6 @@ router.get("/:id",async (req,res)=>{
 
 });
 //create data
-
 router.post("/",userValidationRules(),validate, async (req,res)=>{
     try{
         console.log("-------- ")
@@ -84,7 +75,10 @@ router.post("/",userValidationRules(),validate, async (req,res)=>{
             console.log("existingUser ",existingUser)
             if (existingUser) {
                 // Email already exists, handle the error or take appropriate action
-                return res.status(400).json({ error: 'Email already exists' });
+                return res.status(422).json({ 
+                        Status_code:422,
+                        Success:true, 
+                        message: 'Email already exists' });
             } else {
                 // Email is unique, proceed with creating the new user
                 const data = await userDetails.create({
@@ -120,7 +114,7 @@ router.put("/:id", async (req,res)=>{
     try{
         const data=await userDetails.updateOne({_id:req.params.id},
             {$set:{
-                FirstName:req.body.FirstName,
+                Name:req.body.Name,
             LastName:req.body.LastName,Email:req.body.Email,Password:req.body.Password,
             Contact:req.body.Contact,Role:req.body.Role,Site:req.body.Site,
 

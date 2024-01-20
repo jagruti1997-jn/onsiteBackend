@@ -25,7 +25,7 @@ const categoryValidationRules=()=>{
 
 const userValidationRules=()=>{
     return[
-    body('FirstName').notEmpty().withMessage('First Name cannot be empty'),
+    body('Name').notEmpty().withMessage('Name cannot be empty'),
     body("Email").isEmail().withMessage('Invalid email address'),
     body("Password").isLength({
         min:6,

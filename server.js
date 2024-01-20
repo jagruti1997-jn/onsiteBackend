@@ -16,7 +16,6 @@ require('./database/db.js')
 const loginRoutes=require("./routers/login.js")
 
 app.get('/api/example', (req, res) => {
-    // Correct: Use res.send() to send a response
     console.log("Hello, World! team-----")
     res.send('Hello, World! team ');
   });
