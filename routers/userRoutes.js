@@ -8,8 +8,11 @@ const bcrypt = require('bcrypt')
 //fetch /read data
 router.get('/', async (req, res) => {
   try {
-    let { page = 1, size = 10, searchTerm } = req.query
+    let { page=1, size=10, searchTerm } = req.query
+    let pageNo=parseInt(page)
     const searchRegex = new RegExp(searchTerm, 'i')
+    const totalCount=await userDetails.countDocuments();
+    const lastpage=Math.ceil(totalCount/size)
     const searchQuery = {
       $or: [
         { Name: { $regex: searchRegex } },
@@ -20,18 +23,26 @@ router.get('/', async (req, res) => {
 
     let query = searchTerm ? searchQuery : {}
     const limit = parseInt(size)
-    const skip = (page - 1) * size
+    const skip = (pageNo - 1) * size
 
     const data = await userDetails
-      .find({ user: req.user, $or: [query] })
+      .find({},{Password:0} ,{$or:[query]} )
       .limit(limit)
-      .skip(skip)
+      .skip(skip);
+      let Next_page=null;
+      if(pageNo<lastpage){
+        Next_page=pageNo+1
+      }
     res.status(200).json({
       Status_code: 200,
       Success: true,
-      page,
-      size,
       data: data,
+      total:totalCount,
+      item_per_page:size,
+      current_page:pageNo,
+      next_page:Next_page,
+      last_page:lastpage
+      
     })
   } catch (e) {
     res.status(500).json({
@@ -174,5 +185,6 @@ router.delete('/:id', async (req, res) => {
     })
   }
 })
+
 
 module.exports = router

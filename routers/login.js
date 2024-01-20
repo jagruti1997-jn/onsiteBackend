@@ -6,6 +6,7 @@ const { loginValidationRules, validate } = require('../middleware/validation')
 const bcrypt = require('bcrypt')
 var jwt = require('jsonwebtoken')
 const userdetails = require('../module/userModel')
+const Invalidtoken=require('../module/TokenModel')
 require('dotenv').config()
 const secret = process.env.SECRET_KEY
 const router = express.Router()
@@ -149,28 +150,17 @@ router.post('/refresh', async (req, res) => {
 })
 
 
-const checkTokenValidity = (req, res, next) => {
-    const token = req.headers.authorization;
-  
-    if (!token) {
-      return res.status(401).json({ message: 'Unauthorized' });
+
+
+router.post('/logout', async (req, res) => {
+    // Create a new token with a "logout" claim
+    const token=req.headers.authorization;
+    if(token){
+      await Invalidtoken.create({token})
     }
   
-    // Verify the token
-    jwt.verify(token, secret, (err, decoded) => {
-      if (err || !decoded || decoded.logout) {
-        return res.status(401).json({ message: 'Unauthorized' });
-      }
-  
-      req.user = decoded;
-      next();
-    });
-  };
 
-router.post('/logout', checkTokenValidity, (req, res) => {
-    // Create a new token with a "logout" claim
-    const expiredToken = jwt.sign({ logout: true }, secret);
-    return res.json({ message: 'Logout successful', newToken: expiredToken });
+    return res.json({ message: 'Logout successful'});
   });
 
 module.exports = router
