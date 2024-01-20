@@ -42,11 +42,14 @@ router.get("/",async (req,res)=>{
 router.get("/:id",async (req,res)=>{
     
     const data= await userDetails.findOne({_id:req.params.id});
+
+    const site_data = await siteDetails.findOne({_id:data.Site});
+
     const userData={
         Name:data.Name,
         Role:data.Role,
         Email:data.Email,
-        Site:data.Site,
+        Site:site_data,
         createdAt:data.createdAt,
         
     }
