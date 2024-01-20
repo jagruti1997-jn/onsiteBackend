@@ -53,6 +53,8 @@ router.get('/:id', async (req, res) => {
   const data = await siteDetails.findOne({ _id: req.params.id })
   const siteData = {
     Name: data.Name,
+    description: req.body.description,
+    Location: req.body.Location,
     createdAt: data.createdAt,
   }
   res.status(200).json({
