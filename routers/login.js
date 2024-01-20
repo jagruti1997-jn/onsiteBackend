@@ -146,4 +146,29 @@ router.post('/refresh', async (req, res) => {
   })
 })
 
+
+const checkTokenValidity = (req, res, next) => {
+    const token = req.headers.authorization;
+  
+    if (!token) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+  
+    // Verify the token
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err || !decoded || decoded.logout) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+  
+      req.user = decoded;
+      next();
+    });
+  };
+
+router.post('/logout', checkTokenValidity, (req, res) => {
+    // Create a new token with a "logout" claim
+    const expiredToken = jwt.sign({ logout: true }, secretKey);
+    return res.json({ message: 'Logout successful', newToken: expiredToken });
+  });
+
 module.exports = router
