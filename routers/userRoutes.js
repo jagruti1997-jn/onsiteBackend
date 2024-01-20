@@ -2,6 +2,7 @@ const express=require('express')
 const router=express.Router();
 const {userValidationRules,validate}=require("../middleware/validation")
 const userDetails=require("../module/userModel");
+const siteDetails=require("../module/sitesModel");
 const bcrypt=require('bcrypt')
 
 //fetch /read data
