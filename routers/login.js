@@ -155,7 +155,7 @@ const checkTokenValidity = (req, res, next) => {
     }
   
     // Verify the token
-    jwt.verify(token, secretKey, (err, decoded) => {
+    jwt.verify(token, secret, (err, decoded) => {
       if (err || !decoded || decoded.logout) {
         return res.status(401).json({ message: 'Unauthorized' });
       }
@@ -167,7 +167,7 @@ const checkTokenValidity = (req, res, next) => {
 
 router.post('/logout', checkTokenValidity, (req, res) => {
     // Create a new token with a "logout" claim
-    const expiredToken = jwt.sign({ logout: true }, secretKey);
+    const expiredToken = jwt.sign({ logout: true }, secret);
     return res.json({ message: 'Logout successful', newToken: expiredToken });
   });
 
