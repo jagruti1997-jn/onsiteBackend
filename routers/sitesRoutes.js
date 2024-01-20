@@ -105,7 +105,7 @@ router.put('/:id', async (req, res) => {
     res.status(200).json({
       Status_code: 200,
       Success: true,
-      data,
+      
     })
   } catch (e) {
     res.status(500).json({
@@ -123,7 +123,7 @@ router.delete('/:id', async (req, res) => {
     res.status(200).json({
       Status_code: 200,
       Success: true,
-      data,
+      
     })
   } catch (e) {
     res.status(500).json({
