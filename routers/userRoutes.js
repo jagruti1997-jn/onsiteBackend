@@ -8,8 +8,11 @@ const bcrypt = require('bcrypt')
 //fetch /read data
 router.get('/', async (req, res) => {
   try {
-    let { page = 1, size = 10, searchTerm } = req.query
+    let { page=1, size=10, searchTerm } = req.query
+    let pageNo=parseInt(page)
     const searchRegex = new RegExp(searchTerm, 'i')
+    const totalCount=await userDetails.countDocuments();
+    const lastpage=Math.ceil(totalCount/size)
     const searchQuery = {
       $or: [
         { Name: { $regex: searchRegex } },
@@ -20,18 +23,26 @@ router.get('/', async (req, res) => {
 
     let query = searchTerm ? searchQuery : {}
     const limit = parseInt(size)
-    const skip = (page - 1) * size
+    const skip = (pageNo - 1) * size
 
     const data = await userDetails
-      .find({ user: req.user, $or: [query] })
+      .find({},{Password:0} ,{$or:[query]} )
       .limit(limit)
-      .skip(skip)
+      .skip(skip);
+      let Next_page=null;
+      if(pageNo<lastpage){
+        Next_page=pageNo+1
+      }
     res.status(200).json({
       Status_code: 200,
       Success: true,
-      page,
-      size,
       data: data,
+      total:totalCount,
+      item_per_page:size,
+      current_page:pageNo,
+      next_page:Next_page,
+      last_page:lastpage
+      
     })
   } catch (e) {
     res.status(500).json({
@@ -42,92 +53,88 @@ router.get('/', async (req, res) => {
 })
 
 router.get('/:id', async (req, res) => {
-    try{
-        const data = await userDetails.findOne({ _id: req.params.id })
-        if(data){
-            const site_data = await siteDetails.findOne({ _id: data.Site })
+  try {
+    const data = await userDetails.findOne({ _id: req.params.id })
+    if (data) {
+      const site_data = await siteDetails.findOne({ _id: data.Site })
 
-            const userData = {
-              Name: data.Name,
-              Role: data.Role,
-              Email: data.Email,
-              Site: site_data,
-              createdAt: data.createdAt,
-            }
-          
-            res.status(200).json({
-              Status_code: 200,
-              Success: true,
-              data: userData,
-            })
-        }else{
-            res.status(400).json({
-                Status_code: 400,
-                Success: true,
-               message:"User not found"
-              })
-        }
-        
-    }catch(error){
-        res.status(500).json({
-            Success: false,
-            message: error.message,
-          })
+      const userData = {
+        Name: data.Name,
+        Role: data.Role,
+        Email: data.Email,
+        Site: site_data,
+        createdAt: data.createdAt,
+      }
+
+      res.status(200).json({
+        Status_code: 200,
+        Success: true,
+        data: userData,
+      })
+    } else {
+      res.status(400).json({
+        Status_code: 400,
+        Success: true,
+        message: 'User not found',
+      })
     }
-  
+  } catch (error) {
+    res.status(500).json({
+      Success: false,
+      message: error.message,
+    })
+  }
 })
 //create data
 router.post('/', userValidationRules(), validate, async (req, res) => {
-    const { Password, Name, Email, Contact, Role, Site } = req.body;
+  const { Password, Name, Email, Contact, Role, Site } = req.body
 
-    try {
-      // Hash the password
-      const hash = await bcrypt.hash(Password, 10);
-    
-      // Check if the email already exists
-      const existingUser = await userDetails.findOne({ Email });
-    
-      if (existingUser) {
-        // Email already exists, handle the error or take appropriate action
-        return res.status(422).json({
-          Status_code: 422,
-          Success: false,
-          message: 'Email already exists',
-        });
-      }
-    
-      // Email is unique, proceed with creating the new user
-      const data = await userDetails.create({
-        Name,
-        Email,
-        Password: hash,
-        Contact,
-        Role,
-        Site,
-        user: req.user,
-      });
-    
-      const userRoleID = data._id;
-    
-      // Handle the success, maybe send a response back
-      return res.status(201).json({
-        Status_code: 201,
-        Success: true,
-        message: 'User created successfully',
-        data,
-        userRoleID,
-      });
-    
-    } catch (err) {
-      // Handle errors
-      console.error(err);
-      return res.status(500).json({
-        Status_code: 500,
+  try {
+    // Hash the password
+    const hash = await bcrypt.hash(Password, 10)
+
+    // Check if the email already exists
+    const existingUser = await userDetails.findOne({ Email })
+
+    if (existingUser) {
+      // Email already exists, handle the error or take appropriate action
+      return res.status(422).json({
+        Status_code: 422,
         Success: false,
-        message: err.message || 'Internal Server Error',
-      });
+        message: 'Email already exists',
+      })
     }
-    
+
+    // Email is unique, proceed with creating the new user
+    const data = await userDetails.create({
+      Name,
+      Email,
+      Password: hash,
+      Contact,
+      Role,
+      Site,
+      user: req.user,
+    })
+
+    const userRoleID = data._id
+
+    // Handle the success, maybe send a response back
+    return res.status(201).json({
+      Status_code: 201,
+      Success: true,
+      message: 'User created successfully',
+      data,
+      userRoleID,
+    })
+  } catch (err) {
+    // Handle errors
+    console.error(err)
+    return res.status(500).json({
+      Status_code: 500,
+      Success: false,
+      message: err.message || 'Internal Server Error',
+    })
+  }
 })
 
 //update data
