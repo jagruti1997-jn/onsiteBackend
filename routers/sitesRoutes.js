@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
     let { page = 1, size = 10, searchTerm } = req.query
     let pageNo=parseInt(page)
     
-    const totalCount=await siteDetails.countDocuments();
+    const totalCount=await siteDetails.countDocuments({ user: req.user});
     const lastpage=Math.ceil(totalCount/size)
     let query = searchTerm
       ? { Name: { $regex: new RegExp(searchTerm, 'i') } }
@@ -19,7 +19,7 @@ router.get('/', async (req, res) => {
     const limit = parseInt(size)
     const skip = (pageNo - 1) * size
     const data = await siteDetails
-      .find({$or:[query]} )
+      .find({ user: req.user,$or:[query]} )
       .limit(limit)
       .skip(skip);
 
@@ -50,6 +50,7 @@ router.get('/', async (req, res) => {
 //get by id
 
 router.get('/:id', async (req, res) => {
+  try{
   const data = await siteDetails.findOne({ _id: req.params.id })
   const siteData = {
     Name: data.Name,
@@ -62,6 +63,12 @@ router.get('/:id', async (req, res) => {
     Success: true,
     data: siteData,
   })
+}catch (e) {
+  res.status(500).json({
+    Success: false,
+    message: e.message,
+  })
+}
 })
 
 //create data

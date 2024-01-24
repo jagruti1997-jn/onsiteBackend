@@ -28,11 +28,11 @@ const userDetails = new usersSchema(
     },
     Role: {
       type: String,
-      enum: ['Supervisor', 'Accountant'],
+      enum: ['Supervisor', 'Accountant','Admin'],
       required: true,
     },
     Site: {
-      type: String,
+      type: [String],
       required: true,
     },
     user: {

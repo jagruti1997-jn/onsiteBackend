@@ -9,7 +9,8 @@ const categoryDetails = require('../module/categoryModel')
 //fetch /read data
 router.get('/', async (req, res) => {
   let { page = 1, size = 10, searchTerm } = req.query
-
+  let pageNo=parseInt(page)
+  const totalCount=await categoryDetails.countDocuments({ user: req.user});
   let query = searchTerm
     ? { Name: { $regex: new RegExp(searchTerm, 'i') } }
     : {}
@@ -21,13 +22,23 @@ router.get('/', async (req, res) => {
     .find({ user: req.user, $or: [query] })
     .limit(limit)
     .skip(skip)
+    
+    let Next_page=null;
+      if(pageNo<lastpage){
+        Next_page=pageNo+1
+      }
+
+
   const categoryId = data._id
   res.status(200).json({
     Status_code: 200,
     Success: true,
-    page,
-    size,
     data: data,
+    total:totalCount,
+    item_per_page:size,
+    current_page:pageNo,
+    next_page:Next_page,
+    last_page:lastpage,
     categoryId: categoryId,
   })
 })
@@ -95,7 +106,7 @@ router.put('/:id', async (req, res) => {
     res.status(200).json({
       Status_code: 200,
       Success: true,
-      data,
+      
     })
   } catch (e) {
     res.status(500).json({
@@ -109,11 +120,11 @@ router.put('/:id', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    const users = await categoryDetails.deleteOne({ _id: req.params.id })
+    const data = await categoryDetails.deleteOne({ _id: req.params.id })
     res.status(200).json({
       Status_code: 200,
       Success: true,
-      users,
+      
     })
   } catch (e) {
     res.status(500).json({

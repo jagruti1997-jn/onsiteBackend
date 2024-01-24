@@ -12,7 +12,7 @@ const secret = process.env.SECRET_KEY
 const router = express.Router()
 
 //login api
-router.post('/register', loginValidationRules(), validate, async (req, res) => {
+router.post('/register', async (req, res) => {
   try {
     const { email, password } = req.body
 
@@ -30,7 +30,7 @@ router.post('/register', loginValidationRules(), validate, async (req, res) => {
         })
       }
       const userlogin = await login.create({
-        email,
+      email,
         password: hash,
       })
       const userEmail = userlogin.email
@@ -38,7 +38,7 @@ router.post('/register', loginValidationRules(), validate, async (req, res) => {
         Status_code: 200,
         Success: true,
         message: 'register successful',
-        //userLogin
+        userlogin,
         userEmail,
       })
     })
@@ -53,18 +53,25 @@ router.post('/register', loginValidationRules(), validate, async (req, res) => {
 //signIn api
 router.post('/login', loginValidationRules(), validate, async (req, res) => {
     try {
-        const { email, password } = req.body
-      
-        const data = await login.findOne({ email })
-        if (!data) {
+      const {Email,Password}=req.body;
+      //usercreated details
+      console.log(req.body)
+       const user=await userdetails.findOne({Email})
+       const userData={
+        Name: user.Name,
+        Role: user.Role,
+        Email: user.Email,
+       }
+        console.log(user)
+        if (!user) {
           res.status(400).json({
             Success: false,
             message: 'User is not registered',
           })
           return; // Add return statement to exit the function
         }
-      
-        bcrypt.compare(password, data.password, async function (err, result) {
+     
+        bcrypt.compare(Password, user.Password, async function (err, result) {
           if (err) {
             res.status(500).json({
               Success: false,
@@ -77,7 +84,7 @@ router.post('/login', loginValidationRules(), validate, async (req, res) => {
             const token = jwt.sign(
               {
                 exp: Math.floor(Date.now() / 1000) + 60 * 60,
-                data: data._id,
+                data: user._id,
               },
               secret,
             )
@@ -88,14 +95,17 @@ router.post('/login', loginValidationRules(), validate, async (req, res) => {
             const refreshToken = jwt.sign(
               {
                 exp: Math.floor(Date.now() / 1000) + expTime,
-                data: data._id,
+                data: user._id,
               },
               secret,
             )
-      
+             
+            
+           
             res.status(200).json({
               Status_code: 200,
               Success: true,
+              usersdetails:userData,
               token,
               refreshToken,
             })
@@ -133,7 +143,7 @@ router.post('/refresh', async (req, res) => {
     if (err) {
       res.status(401).json({ message: unauthorized })
     } else {
-      const data = await login.findOne({ _id: decoded.data })
+      const data = await userdetails.findOne({ _id: decoded.data })
       const newToken = jwt.sign(
         {
           exp: Math.floor(Date.now() / 1000) + 60 * 60,

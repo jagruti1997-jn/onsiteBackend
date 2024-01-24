@@ -11,8 +11,8 @@ const workersValidationRules = () => {
 }
 const loginValidationRules = () => {
   return [
-    body('email').isEmail().withMessage('Invalid email address'),
-    body('password')
+    body('Email').isEmail().withMessage('Invalid email address'),
+    body('Password')
       .isLength({
         min: 6,
         max: 16,

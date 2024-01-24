@@ -7,22 +7,32 @@ const vendorDetails = require('../module/vendorModel')
 router.get('/', async (req, res) => {
   try {
     let { page = 1, size = 10, searchTerm } = req.query
-
+    let pageNo=parseInt(page)
+    const totalCount=await vendorDetails.countDocuments({ user: req.user});
+    const lastpage=Math.ceil(totalCount/size)
     let query = searchTerm
       ? { Name: { $regex: new RegExp(searchTerm, 'i') } }
       : {}
     const limit = parseInt(size)
-    const skip = (page - 1) * size
+    const skip = (pageNo - 1) * size
     const data = await vendorDetails
       .find({ user: req.user, $or: [query] })
       .limit(limit)
       .skip(skip)
+
+      let Next_page=null;
+      if(pageNo<lastpage){
+        Next_page=pageNo+1
+      }
     res.status(200).json({
       Status_code: 200,
       Success: true,
-      page,
-      size,
       data: data,
+      total:totalCount,
+      item_per_page:size,
+      current_page:pageNo,
+      next_page:Next_page,
+      last_page:lastpage
     })
   } catch (e) {
     res.status(500).json({
@@ -35,6 +45,7 @@ router.get('/', async (req, res) => {
 //get by id
 
 router.get('/:id', async (req, res) => {
+  try{
   const data = await vendorDetails.findOne({ _id: req.params.id })
   const vendorData = {
     Name: data.Name,
@@ -45,6 +56,12 @@ router.get('/:id', async (req, res) => {
     Success: true,
     data: vendorData,
   })
+} catch (e) {
+  res.status(500).json({
+    Success: false,
+    message: e.message,
+  })
+}
 })
 
 //create data
@@ -93,7 +110,7 @@ router.put('/:id', async (req, res) => {
     res.status(200).json({
       Status_code: 200,
       Success: true,
-      data,
+      
     })
   } catch (e) {
     res.status(500).json({
@@ -111,7 +128,7 @@ router.delete('/:id', async (req, res) => {
     res.status(200).json({
       Status_code: 200,
       Success: true,
-      data,
+      
     })
   } catch (e) {
     res.status(500).json({

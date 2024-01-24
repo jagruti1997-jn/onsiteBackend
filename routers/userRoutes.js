@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
     let { page=1, size=10, searchTerm } = req.query
     let pageNo=parseInt(page)
     const searchRegex = new RegExp(searchTerm, 'i')
-    const totalCount=await userDetails.countDocuments();
+    const totalCount=await userDetails.countDocuments({ user: req.user});
     const lastpage=Math.ceil(totalCount/size)
     const searchQuery = {
       $or: [
@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
     const skip = (pageNo - 1) * size
 
     const data = await userDetails
-      .find({},{Password:0} ,{$or:[query]} )
+      .find({ user: req.user},{Password:0} ,{$or:[query]} )
       .limit(limit)
       .skip(skip);
       let Next_page=null;
@@ -56,13 +56,13 @@ router.get('/:id', async (req, res) => {
   try {
     const data = await userDetails.findOne({ _id: req.params.id })
     if (data) {
-      const site_data = await siteDetails.findOne({ _id: data.Site })
-
+      // const site_data = await siteDetails.findOne({ _id: data.Site })
+      // console.log(site_data)
       const userData = {
         Name: data.Name,
         Role: data.Role,
         Email: data.Email,
-        Site: site_data,
+        // Site:[site_data],
         createdAt: data.createdAt,
       }
 
@@ -145,13 +145,12 @@ router.put('/:id', async (req, res) => {
       {
         $set: {
           Name: req.body.Name,
-          LastName: req.body.LastName,
           Email: req.body.Email,
           Password: req.body.Password,
           Contact: req.body.Contact,
           Role: req.body.Role,
           Site: req.body.Site,
-
+         
           runValidators: true,
         },
       },

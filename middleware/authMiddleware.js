@@ -3,7 +3,8 @@ const bodyParser = require('body-parser')
 const auth = express()
 // require('dotenv').config();
 auth.use(bodyParser.json())
-const login = require('../module/login')
+// const login = require('../module/login')
+const userdetails = require('../module/userModel')
 const Invalidtoken=require('../module/TokenModel')
 const jwt = require('jsonwebtoken')
 const secret = 'RESTAPI'
@@ -30,10 +31,10 @@ const authorization = async (req, res, next) => {
           message: 'not Authenticated',
         })
       }
-
+      console.log(decoded.data)
       if (decoded.data){
-        const user = await login.findOne({ _id: decoded.data })
-        req.user = user._id
+        const users = await userdetails.findOne({ _id: decoded.data })
+       req.user = users._id
       }
       next()
     })
