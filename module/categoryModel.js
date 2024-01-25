@@ -15,6 +15,10 @@ const catDetails = new categorySchema(
       type: String,
       required: true,
     },
+    description:{
+      type: String,
+      required: true,
+    },
     user: {
       type: categorySchema.Types.ObjectId,
       ref: 'User',
