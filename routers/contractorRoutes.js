@@ -15,6 +15,7 @@ router.get('/', async (req, res) => {
     let { page = 1, size = 10, searchTerm } = req.query
     let pageNo=parseInt(page)
     const totalCount=await contractorDetails.countDocuments({ user: req.user});
+    const lastpage=Math.ceil(totalCount/size)
     let query = searchTerm
       ? { Name: { $regex: new RegExp(searchTerm, 'i') } }
       : {}
