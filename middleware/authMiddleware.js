@@ -31,7 +31,7 @@ const authorization = async (req, res, next) => {
           message: 'not Authenticated',
         })
       }
-      console.log(decoded.data)
+      
       if (decoded.data){
         const users = await userdetails.findOne({ _id: decoded.data })
        req.user = users._id
