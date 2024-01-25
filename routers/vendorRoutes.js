@@ -47,14 +47,11 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try{
   const data = await vendorDetails.findOne({ _id: req.params.id })
-  const vendorData = {
-    Name: data.Name,
-    createdAt: data.createdAt,
-  }
+  
   res.status(200).json({
     Status_code: 200,
     Success: true,
-    data: vendorData,
+    data: data,
   })
 } catch (e) {
   res.status(500).json({
