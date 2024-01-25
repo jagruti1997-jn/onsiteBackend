@@ -99,7 +99,9 @@ router.put('/:id', async (req, res) => {
       {
         $set: {
           vendorID: req.body.vendorID,
-
+          Name: req.body.Name,
+          CategoryUnit: req.body.CategoryUnit,
+          description:req.body.description,
           runValidators: true,
         },
       },
