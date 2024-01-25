@@ -53,13 +53,11 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try{
   const data = await contractorDetails.findOne({ _id: req.params.id })
-  const contractorData = {
-    Name: data.Name,
-  }
+  
   res.status(200).json({
     Status_code: 200,
     Success: true,
-    data: contractorData,
+    data: data,
   })
 }catch (e) {
   res.status(500).json({
