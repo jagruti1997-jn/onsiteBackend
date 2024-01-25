@@ -72,7 +72,7 @@ router.post('/', categoryValidationRules(), validate, async (req, res) => {
     const data = await categoryDetails.create({
       Name: req.body.Name,
       CategoryUnit: req.body.CategoryUnit,
-      
+      description:req.body.description,
       user: req.user,
     })
     const categoryId = data._id
