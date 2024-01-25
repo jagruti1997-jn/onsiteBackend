@@ -5,6 +5,7 @@ const venDetails = new vendorSchema(
     Name: {
       type: String,
       required: true,
+      unique:true,
     },
     PhoneNumber: {
       type: Number,
